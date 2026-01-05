@@ -1,6 +1,6 @@
-export default function handler(req, res) {
-  res.status(200).json({
-    status: "ok",
-    mensagem: "API funcionando 🚀"
-  });
+{
+  "status": "ok",
+  "recomendacao": "AZUL",
+  "confianca": "71%",
+  "engine": "Abacus-like v1"
 }
