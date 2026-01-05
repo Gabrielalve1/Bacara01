@@ -26,9 +26,8 @@
 </div>
 
 <script>
-const API_URL = ""; // deixar vazio para o mesmo host (Replit)
+const API_URL = ""; // vazio = mesmo host
 
-// Adicionar cor
 async function addColor(color) {
   try {
     const res = await fetch(API_URL + "/add", {
@@ -44,7 +43,6 @@ async function addColor(color) {
   }
 }
 
-// Analisar histórico
 async function analyze() {
   try {
     const res = await fetch(API_URL + "/analyze");
@@ -56,7 +54,7 @@ async function analyze() {
   }
 }
 
-// Atualiza análise automaticamente a cada 5 segundos
+// Atualiza a cada 5 segundos
 setInterval(analyze, 5000);
 
 // Primeira análise ao abrir
