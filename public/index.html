@@ -1,81 +1,24 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-  <meta charset="UTF-8" />
-  <title>Bacara AI</title>
-  <style>
-    body {
-      background: #0b0b0b;
-      color: white;
-      font-family: Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-    .box {
-      background: #151515;
-      padding: 30px;
-      border-radius: 12px;
-      width: 320px;
-      text-align: center;
-    }
-    button {
-      margin-top: 15px;
-      padding: 10px;
-      width: 100%;
-      background: #1e90ff;
-      border: none;
-      border-radius: 8px;
-      color: white;
-      font-size: 16px;
-      cursor: pointer;
-    }
-    button:hover {
-      opacity: 0.9;
-    }
-    #result {
-      margin-top: 15px;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>Bacboo Abacus</title>
+<script src="front.js"></script>
 </head>
 <body>
+<h1>IA Bacboo Abacus</h1>
 
-  <div class="box">
-    <h2>🎯 Bacara AI</h2>
+<p>Adicionar cor manual:</p>
+<button onclick="addColor('Azul')">🔵 Azul</button>
+<button onclick="addColor('Vermelho')">🔴 Vermelho</button>
+<button onclick="addColor('Empate')">⚪ Empate</button>
 
-    <input type="file" id="image" accept="image/*" />
-    <button onclick="analisar()">Analisar</button>
+<hr>
 
-    <div id="result"></div>
-  </div>
+<p>Enviar imagem do gráfico:</p>
+<input type="file" id="fileInput">
+<button onclick="sendImage()">Enviar imagem</button>
 
-  <script>
-    async function analisar() {
-      const fileInput = document.getElementById("image");
-      const result = document.getElementById("result");
-
-      result.innerHTML = "⏳ Analisando...";
-
-      const formData = new FormData();
-
-      if (fileInput.files.length > 0) {
-        formData.append("image", fileInput.files[0]);
-      }
-
-      try {
-        const res = await fetch("/api/analyze", {
-          method: "POST",
-          body: formData
-        });
-
-        const data = await res.json();
-        result.innerHTML = "✅ Resposta: " + JSON.stringify(data);
-      } catch (e) {
-        result.innerHTML = "❌ Erro ao analisar. Verifique a API.";
-      }
-    }
-  </script>
-
+<div id="result">Resultado aparecerá aqui</div>
 </body>
 </html>
