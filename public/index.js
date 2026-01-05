@@ -5,43 +5,39 @@ app.use(express.json());
 
 const PORT = process.env.PORT || 3000;
 
-// Função para ler histórico de cores
+// Ler histórico
 function readHistory() {
   try {
     const data = fs.readFileSync("history.json", "utf8");
     return JSON.parse(data);
-  } catch (err) {
-    return []; // Se não existir, retorna array vazio
+  } catch {
+    return [];
   }
 }
 
-// Função para salvar nova cor no histórico
+// Salvar cor nova
 function saveHistory(color) {
   const history = readHistory();
   history.push(color);
   fs.writeFileSync("history.json", JSON.stringify(history, null, 2));
 }
 
-// Função de análise Abacus
+// Análise Abacus básica
 function analyzeHistory(history) {
-  if (!history.length) return { recommendation: "Sem dados ainda", stats: {} };
+  if (!history.length) return { recommendation: "Sem dados", stats: {} };
 
   const total = history.length;
   const counts = { Azul: 0, Vermelho: 0, Empate: 0 };
 
-  history.forEach(c => {
-    if (counts[c] !== undefined) counts[c]++;
-  });
+  history.forEach(c => { if (counts[c] !== undefined) counts[c]++; });
 
-  // Tendência simples: comparação últimas 5 rodadas
   const last5 = history.slice(-5);
   const lastCounts = { Azul: 0, Vermelho: 0, Empate: 0 };
   last5.forEach(c => { if (lastCounts[c] !== undefined) lastCounts[c]++; });
 
-  // Recomendação baseada na "tendência de correção"
-  let recommendation = "Azul"; // default
+  let recommendation = "Azul";
   if (lastCounts.Azul > lastCounts.Vermelho && lastCounts.Azul > lastCounts.Empate) {
-    recommendation = "Vermelho"; // correção esperada
+    recommendation = "Vermelho";
   } else if (lastCounts.Vermelho > lastCounts.Azul && lastCounts.Vermelho > lastCounts.Empate) {
     recommendation = "Azul";
   } else {
@@ -50,31 +46,27 @@ function analyzeHistory(history) {
 
   return {
     recommendation,
-    stats: {
-      totalRounds: total,
-      counts,
-      last5
-    }
+    stats: { totalRounds: total, counts, last5 }
   };
 }
 
-// Endpoint para adicionar nova cor
+// Endpoints
 app.post("/add", (req, res) => {
   const { color } = req.body;
   if (!["Azul", "Vermelho", "Empate"].includes(color)) {
     return res.status(400).json({ error: "Cor inválida" });
   }
   saveHistory(color);
-  res.json({ message: "Cor adicionada com sucesso!" });
+  res.json({ message: "Cor adicionada!" });
 });
 
-// Endpoint para análise
 app.get("/analyze", (req, res) => {
   const history = readHistory();
-  const analysis = analyzeHistory(history);
-  res.json(analysis);
+  res.json(analyzeHistory(history));
 });
 
-app.listen(PORT, () => {
-  console.log(`Servidor rodando em http://localhost:${PORT}`);
+app.get("/", (req, res) => {
+  res.send("Servidor Abacus rodando!");
 });
+
+app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
