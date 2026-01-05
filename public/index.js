@@ -1,10 +1,13 @@
 const express = require("express");
 const fs = require("fs");
 const path = require("path");
+const multer = require("multer");
+const Jimp = require("jimp");
 const app = express();
 app.use(express.json());
-app.use(express.static(path.join(__dirname))); // Serve arquivos estáticos (CSS/JS/HTML)
+app.use(express.static(path.join(__dirname)));
 
+const upload = multer({ dest: "uploads/" });
 const PORT = process.env.PORT || 5000;
 
 // -----------------------
@@ -64,8 +67,50 @@ function analyzeHistory(history) {
 }
 
 // -----------------------
+// Função de Visão Computacional (processar imagem)
+async function processImage(filePath) {
+  const image = await Jimp.read(filePath);
+  const width = image.bitmap.width;
+  const height = image.bitmap.height;
+  const colorsDetected = [];
+
+  // Aqui você pode ajustar os pixels que quer ler (ex: linha central)
+  for (let x = 0; x < width; x += 10) {
+    const y = Math.floor(height / 2);
+    const pixelColor = image.getPixelColor(x, y); // retorna número hexadecimal
+    const { r, g, b } = Jimp.intToRGBA(pixelColor);
+
+    // Detecta a cor aproximada
+    if (r > 200 && g < 100 && b < 100) colorsDetected.push("Vermelho");
+    else if (b > 200 && r < 100 && g < 100) colorsDetected.push("Azul");
+    else if (r > 200 && g > 200 && b > 200) colorsDetected.push("Empate");
+  }
+
+  return colorsDetected;
+}
+
+// -----------------------
 // Endpoints
 // -----------------------
+
+// Upload de imagem
+app.post("/upload", upload.single("image"), async (req, res) => {
+  try {
+    const filePath = req.file.path;
+    const colorSequence = await processImage(filePath);
+
+    // Salva cores detectadas no histórico
+    colorSequence.forEach(c => saveHistory(c));
+
+    const analysis = analyzeHistory(readHistory());
+    res.json(analysis);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Erro ao processar imagem" });
+  }
+});
+
+// Adicionar cor manualmente
 app.post("/add", (req, res) => {
   const { color } = req.body;
   if (!["Azul", "Vermelho", "Empate"].includes(color)) {
@@ -75,6 +120,7 @@ app.post("/add", (req, res) => {
   res.json({ message: "Cor adicionada com sucesso!" });
 });
 
+// Analisar histórico
 app.get("/analyze", (req, res) => {
   const history = readHistory();
   res.json(analyzeHistory(history));
