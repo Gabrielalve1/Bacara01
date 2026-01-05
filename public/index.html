@@ -1,1 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Bacara AI</title>
+  <style>
+    body {
+      background: #0b0b0b;
+      color: white;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .box {
+      background: #151515;
+      padding: 30px;
+      border-radius: 12px;
+      width: 320px;
+      text-align: center;
+    }
+    button {
+      margin-top: 15px;
+      padding: 10px;
+      width: 100%;
+      background: #1e90ff;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      opacity: 0.9;
+    }
+    #result {
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
 
+  <div class="box">
+    <h2>🎯 Bacara AI</h2>
+
+    <input type="file" id="image" accept="image/*" />
+    <button onclick="analisar()">Analisar</button>
+
+    <div id="result"></div>
+  </div>
+
+  <script>
+    async function analisar() {
+      const fileInput = document.getElementById("image");
+      const result = document.getElementById("result");
+
+      result.innerHTML = "⏳ Analisando...";
+
+      const formData = new FormData();
+
+      if (fileInput.files.length > 0) {
+        formData.append("image", fileInput.files[0]);
+      }
+
+      try {
+        const res = await fetch("/api/analyze", {
+          method: "POST",
+          body: formData
+        });
+
+        const data = await res.json();
+        result.innerHTML = "✅ Resposta: " + JSON.stringify(data);
+      } catch (e) {
+        result.innerHTML = "❌ Erro ao analisar. Verifique a API.";
+      }
+    }
+  </script>
+
+</body>
+</html>
