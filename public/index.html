@@ -15,10 +15,16 @@
 
 <h1>IA Bacboo Abacus</h1>
 
-<p>Adicionar cor:</p>
+<p>Adicionar cor manualmente:</p>
 <button onclick="addColor('Azul')">🔵 Azul</button>
 <button onclick="addColor('Vermelho')">🔴 Vermelho</button>
 <button onclick="addColor('Empate')">⚪ Empate</button>
+
+<hr>
+
+<p>Ou envie a imagem do gráfico:</p>
+<input type="file" id="fileInput">
+<button onclick="sendImage()">Enviar imagem</button>
 
 <div id="output">
   <h2>Resultado:</h2>
@@ -26,16 +32,16 @@
 </div>
 
 <script>
-const API_URL = ""; // vazio = mesmo host
+const API_URL = "";
 
+// Adicionar cor manual
 async function addColor(color) {
   try {
-    const res = await fetch(API_URL + "/add", {
+    await fetch(API_URL + "/add", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ color })
     });
-    await res.json();
     analyze();
   } catch (err) {
     console.error(err);
@@ -43,6 +49,25 @@ async function addColor(color) {
   }
 }
 
+// Upload da imagem
+async function sendImage() {
+  const file = document.getElementById("fileInput").files[0];
+  if (!file) return alert("Escolha uma imagem!");
+
+  const formData = new FormData();
+  formData.append("image", file);
+
+  try {
+    const res = await fetch(API_URL + "/upload", { method: "POST", body: formData });
+    const data = await res.json();
+    document.getElementById("result").textContent = JSON.stringify(data, null, 2);
+  } catch (err) {
+    console.error(err);
+    alert("Erro ao enviar imagem!");
+  }
+}
+
+// Analisar histórico
 async function analyze() {
   try {
     const res = await fetch(API_URL + "/analyze");
@@ -54,10 +79,8 @@ async function analyze() {
   }
 }
 
-// Atualiza a cada 5 segundos
+// Atualiza automaticamente
 setInterval(analyze, 5000);
-
-// Primeira análise ao abrir
 analyze();
 </script>
 
