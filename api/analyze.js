@@ -1,6 +1,3 @@
-{
-  "status": "ok",
-  "recomendacao": "AZUL",
-  "confianca": "71%",
-  "engine": "Abacus-like v1"
+export default function handler(req, res) {
+  res.status(200).send("API OK");
 }
