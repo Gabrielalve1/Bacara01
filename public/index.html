@@ -8,6 +8,7 @@
     h1 { color: #333; }
     button { padding: 10px 20px; margin: 5px; cursor: pointer; }
     #output { margin-top: 20px; padding: 10px; background: #fff; border-radius: 5px; }
+    pre { white-space: pre-wrap; word-wrap: break-word; }
   </style>
 </head>
 <body>
@@ -25,8 +26,9 @@
 </div>
 
 <script>
-const API_URL = ""; // deixar vazio ou colocar sua URL Replit completa
+const API_URL = ""; // deixar vazio para o mesmo host (Replit)
 
+// Adicionar cor
 async function addColor(color) {
   try {
     const res = await fetch(API_URL + "/add", {
@@ -34,8 +36,7 @@ async function addColor(color) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ color })
     });
-    const data = await res.json();
-    console.log(data);
+    await res.json();
     analyze();
   } catch (err) {
     console.error(err);
@@ -43,6 +44,7 @@ async function addColor(color) {
   }
 }
 
+// Analisar histórico
 async function analyze() {
   try {
     const res = await fetch(API_URL + "/analyze");
