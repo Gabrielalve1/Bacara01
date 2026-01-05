@@ -1,1 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Bacboo Abacus</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f0f0f0; }
+    h1 { color: #333; }
+    button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+    #output { margin-top: 20px; padding: 10px; background: #fff; border-radius: 5px; }
+  </style>
+</head>
+<body>
 
+<h1>IA Bacboo Abacus</h1>
+
+<p>Adicionar cor:</p>
+<button onclick="addColor('Azul')">🔵 Azul</button>
+<button onclick="addColor('Vermelho')">🔴 Vermelho</button>
+<button onclick="addColor('Empate')">⚪ Empate</button>
+
+<div id="output">
+  <h2>Resultado:</h2>
+  <pre id="result">Sem análise ainda</pre>
+</div>
+
+<script>
+const API_URL = ""; // deixar vazio ou colocar sua URL Replit completa
+
+async function addColor(color) {
+  try {
+    const res = await fetch(API_URL + "/add", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ color })
+    });
+    const data = await res.json();
+    console.log(data);
+    analyze();
+  } catch (err) {
+    console.error(err);
+    alert("Erro ao adicionar cor!");
+  }
+}
+
+async function analyze() {
+  try {
+    const res = await fetch(API_URL + "/analyze");
+    const data = await res.json();
+    document.getElementById("result").textContent = JSON.stringify(data, null, 2);
+  } catch (err) {
+    console.error(err);
+    alert("Erro ao analisar histórico!");
+  }
+}
+
+// Atualiza análise automaticamente a cada 5 segundos
+setInterval(analyze, 5000);
+
+// Primeira análise ao abrir
+analyze();
+</script>
+
+</body>
+</html>
