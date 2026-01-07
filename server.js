@@ -1,32 +1,28 @@
-const express = require("express");
+import express from "express";
+import fs from "fs";
+import path from "path";
+import cors from "cors";
+
 const app = express();
-const fs = require("fs");
+app.use(cors());
+app.use(express.json({ limit: "5mb" }));
 
-app.use(express.json());
-app.use(express.static("public"));
+const DATA_DIR = "./data";
+const FILE = path.join(DATA_DIR, "history.json");
+if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR);
+if (!fs.existsSync(FILE)) fs.writeFileSync(FILE, "[]");
 
-app.get("/", (req, res) => {
-  res.send("🔥 Bacara AI – Abacus Engine online");
+app.get("/api/history", (req, res) => {
+  const data = JSON.parse(fs.readFileSync(FILE));
+  res.json(data);
 });
 
-app.get("/analyze", (req, res) => {
-  const history = JSON.parse(fs.readFileSync("history.json", "utf8"));
-
-  // lógica inicial estilo Abacus (simples por enquanto)
-  const last = history[history.length - 1] || "AZUL";
-
-  const recomendacao =
-    last === "AZUL" ? "VERMELHO" : "AZUL";
-
-  res.json({
-    status: "ok",
-    recomendacao,
-    confianca: "68%",
-    engine: "Abacus v1"
-  });
+app.post("/api/add", (req, res) => {
+  const data = JSON.parse(fs.readFileSync(FILE));
+  data.push(req.body);
+  fs.writeFileSync(FILE, JSON.stringify(data.slice(-200)));
+  res.json({ ok: true });
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log("Servidor rodando na porta", PORT);
-});
+const PORT = process.env.PORT || 5174;
+app.listen(PORT, () => console.log("API rodando na porta", PORT));
