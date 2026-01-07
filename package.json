@@ -1,12 +1,13 @@
 {
-  "name": "bacara-ai",
+  "name": "bacara-abacus",
   "version": "1.0.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite --host 0.0.0.0 --port 5173"
+    "start": "node server.js"
   },
-  "devDependencies": {
-    "vite": "^5.0.0"
+  "dependencies": {
+    "express": "^4.19.2",
+    "cors": "^2.8.5"
   }
 }
