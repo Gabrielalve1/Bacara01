@@ -1,11 +1,12 @@
 {
   "name": "bacara-ai",
   "version": "1.0.0",
-  "main": "index.js",
+  "private": true,
+  "type": "module",
   "scripts": {
-    "start": "node index.js"
+    "dev": "vite --host 0.0.0.0 --port 5173"
   },
-  "dependencies": {
-    "express": "^4.18.2"
+  "devDependencies": {
+    "vite": "^5.0.0"
   }
 }
